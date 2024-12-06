@@ -1,0 +1,11 @@
+numpy
+pandas
+protobuf
+psycopg2
+PyYAML
+SQLAlchemy
+streamlit_authenticator
+streamlit_extras
+streamlit_qrcode_scanner
+qrcode
+pillow

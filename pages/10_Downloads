@@ -1,0 +1,83 @@
+import streamlit as st
+import streamlit_authenticator as stauth
+from streamlit_extras.stylable_container import stylable_container as style
+import yaml
+from yaml.loader import SafeLoader
+import pandas as pd
+import datetime
+from streamlit import session_state as ss
+from err import errStorage
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
+
+st.set_page_config(
+    page_title='PDV - Admin',
+    page_icon='👜',
+    layout='wide',
+)
+
+#### CODE AFTER THIS LINE ####
+with open('.streamlit/pswd.yaml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    #config['preauthorized']
+)
+
+conn = st.connection("postgresql", type="sql")
+
+### DEFINIÇÃO DE VARIÁVIES
+def downVendor():
+    ss['df2Vendor'] = conn.query("SELECT * FROM public.vendtable;", ttl=0)
+    return ss['df2Vendor'].to_csv().encode("utf-8")
+
+def downInventory():
+    ss['df2Inventory'] = conn.query("SELECT * FROM public.inventtable;", ttl=0)
+    return ss['df2Inventory'].to_csv().encode("utf-8")
+
+def downSeller():
+    ss['df2Seller'] = conn.query("SELECT * FROM public.sellertable;", ttl=0)
+    return ss['df2Seller'].to_csv().encode("utf-8")
+
+def downPurchase():
+    ss['df2Purchase'] = conn.query("SELECT * FROM public.purchtable;", ttl=0)
+    return ss['df2Purchase'].to_csv().encode("utf-8")
+
+def downSales():
+    ss['df2Sales'] = conn.query("select * from public.salestable;", ttl=0)
+    return ss['df2Sales'].to_csv().encode("utf-8")
+
+def downParameters():
+    ss['df2Parameters'] = conn.query('SELECT * FROM public.paramtable;', ttl=0)
+    return ss['df2Parameters'].to_csv().encode("utf-8")
+
+def downStores():
+    ss['df2Stores'] = conn.query('SELECT * FROM public.storetable;', ttl=0)
+    return ss['df2Stores'].to_csv().encode("utf-8")
+
+def downInventmovement():
+    ss['df2Inventmovement'] = conn.query('SELECT * FROM public.inventmovement;', ttl=0)
+    return ss['df2Inventmovement'].to_csv().encode("utf-8")
+
+def downErrortable():
+    ss['df2Errortable'] = conn.query('SELECT * FROM public.errortable;', ttl=0)
+    return ss['df2Errortable'].to_csv().encode("utf-8")
+
+downVendor()
+downInventory()
+downSeller()
+downPurchase()
+downSales()
+downParameters()
+downStores()
+downInventmovement()
+downErrortable()
+
+for file in ['df2Vendor', 'df2Inventory', 'df2Seller', 'df2Purchase', 'df2Sales', 'df2Parameters', 'df2Stores', 'df2Inventmovement', 'df2Errortable']:
+     with st.expander(file):
+         st.write(ss[file])
